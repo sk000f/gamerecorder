@@ -6,14 +6,24 @@ import (
 	"strings"
 )
 
-// PlayerServer is a handler function for the gamerecorder
-func PlayerServer(w http.ResponseWriter, r *http.Request) {
-	player := strings.TrimPrefix(r.URL.Path, "/players/")
-
-	fmt.Fprint(w, getPlayerScore(player))
+// PlayerServer is the gamerecorder server
+type PlayerServer struct {
+	Store PlayerStore
 }
 
-func getPlayerScore(name string) string {
+// PlayerStore holds player score data
+type PlayerStore interface {
+	GetPlayerScore(name string) int
+}
+
+func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	player := strings.TrimPrefix(r.URL.Path, "/players/")
+
+	fmt.Fprint(w, p.Store.GetPlayerScore(player))
+}
+
+// GetPlayerScore returns the specified player's score
+func GetPlayerScore(name string) string {
 	if name == "Pepper" {
 		return "20"
 	}
