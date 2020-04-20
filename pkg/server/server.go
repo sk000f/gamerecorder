@@ -17,6 +17,22 @@ type PlayerStore interface {
 }
 
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodPost:
+		p.processWin(w)
+		break
+	case http.MethodGet:
+		p.showScore(w, r)
+		break
+	}
+
+}
+
+func (p *PlayerServer) processWin(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusAccepted)
+}
+
+func (p *PlayerServer) showScore(w http.ResponseWriter, r *http.Request) {
 	player := strings.TrimPrefix(r.URL.Path, "/players/")
 
 	score := p.Store.GetPlayerScore(player)
